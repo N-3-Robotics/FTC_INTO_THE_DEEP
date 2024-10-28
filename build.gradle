@@ -7,6 +7,7 @@
 buildscript {
     ext {
         agp_version = '7.2.0'
+        kotlin_version = '1.8.20'
     }
     repositories {
         mavenCentral()
@@ -15,6 +16,7 @@ buildscript {
     dependencies {
         // Note for FTC Teams: Do not modify this yourself.
         classpath "com.android.tools.build:gradle:$agp_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 

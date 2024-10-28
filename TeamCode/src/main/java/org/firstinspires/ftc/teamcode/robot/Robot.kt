@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
+import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
 import com.qualcomm.robotcore.hardware.DcMotorSimple
@@ -32,7 +33,7 @@ class Robot(hwMap: HardwareMap?) {
 
     var ELEVATOR: DcMotorEx
 
-    var INTAKE: Servo
+    var INTAKE: CRServo
 
     var LOCK: Servo
 
@@ -79,8 +80,9 @@ class Robot(hwMap: HardwareMap?) {
         LIFT.direction = DcMotorSimple.Direction.REVERSE
 
         PIVOT = hardwareMap!!.get(DcMotorEx::class.java, "PIVOT")
+        PIVOT.direction = DcMotorSimple.Direction.REVERSE
         
-        INTAKE = hardwareMap!!.get(Servo::class.java, "INTAKE")
+        INTAKE = hardwareMap!!.get(CRServo::class.java, "INTAKE")
 
         ELEVATOR = hardwareMap!!.get(DcMotorEx::class.java, "ELEVATOR")
 
@@ -104,6 +106,8 @@ class Robot(hwMap: HardwareMap?) {
         FL.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         BR.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         BL.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+
+        LIFT.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
         IMU = hardwareMap!!.get(BNO055IMU::class.java, "imu")
         val parameters = BNO055IMU.Parameters()
