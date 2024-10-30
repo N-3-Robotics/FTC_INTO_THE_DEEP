@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes.autos
+package org.firstinspires.ftc.teamcode.opmodes.autos.retired
 
 //import org.firstinspires.ftc.teamcode.robot.Robot
 import com.acmerobotics.roadrunner.geometry.Pose2d
@@ -12,9 +12,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple
 import com.qualcomm.robotcore.hardware.Servo
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive
-import org.firstinspires.ftc.teamcode.opmodes.autos.Alliance.*
-import org.firstinspires.ftc.teamcode.opmodes.autos.Position.*
-import org.firstinspires.ftc.teamcode.opmodes.autos.retired.TestVars
+import org.firstinspires.ftc.teamcode.opmodes.autos.retired.Alliance.*
+import org.firstinspires.ftc.teamcode.opmodes.autos.retired.Position.*
 import org.firstinspires.ftc.teamcode.robot.Camera
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence
 import java.util.LinkedList

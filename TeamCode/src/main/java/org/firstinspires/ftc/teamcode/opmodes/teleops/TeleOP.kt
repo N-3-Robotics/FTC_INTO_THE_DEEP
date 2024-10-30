@@ -70,9 +70,9 @@ class TeleOP: LinearOpMode() {
             var liftPower = -gamepad2.right_stick_y.toDouble()
 
             // if the Lift is past the Max extension, set the power to -0.1
-            if (ROBOT.LIFT.currentPosition > maxExtension) {
-                liftPower = -0.5
-            }
+//            if (ROBOT.LIFT.currentPosition > maxExtension) {
+//                liftPower = -0.5
+//            }
 
 
 
@@ -155,7 +155,18 @@ class TeleOP: LinearOpMode() {
             telemetry.update()
             /* END - ACTION LOOP */
         }
+        // Reset the robot after the program ends
+        if (ROBOT.PIVOT.currentPosition > 0.0 || ROBOT.LIFT.currentPosition > 0.0){
+            ROBOT.PIVOT.targetPosition = 0
+            ROBOT.LIFT.targetPosition = 0
 
+            ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_TO_POSITION
+            ROBOT.LIFT.mode = DcMotor.RunMode.RUN_TO_POSITION
+
+            while (ROBOT.LIFT.currentPosition > 100) {
+                sleep(500)
+            }
+        }
 
         
     }

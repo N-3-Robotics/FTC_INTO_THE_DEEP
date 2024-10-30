@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.opmodes.autos.Alliance;
+import org.firstinspires.ftc.teamcode.opmodes.autos.retired.Alliance;
 import org.firstinspires.ftc.teamcode.pipelines.BluePipeline;
 import org.firstinspires.ftc.teamcode.pipelines.RedPipeline;
 import org.firstinspires.ftc.teamcode.pipelines.depricated.AllianceDetector;
@@ -13,8 +13,6 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvWebcam;
-
-import java.util.Objects;
 
 public class Camera {
     public OpenCvWebcam webcam;
