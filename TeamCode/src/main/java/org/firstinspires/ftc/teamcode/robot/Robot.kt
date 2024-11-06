@@ -5,6 +5,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.CRServo
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -30,15 +32,18 @@ class Robot(hwMap: HardwareMap?) {
 
     var LIFT: DcMotorEx
     var PIVOT: DcMotorEx
+    var PIVOTF: DcMotorEx
 
     var ELEVATOR: DcMotorEx
 
     var INTAKE: CRServo
+    var LINTAKE: CRServo
 
     var LOCK: Servo
 
-
     var IMU: BNO055IMU
+
+    var ODOSENSOR: SparkFunOTOS
 
     val trackWidth = 12.0
     val wheelBase = 9.5
@@ -81,8 +86,11 @@ class Robot(hwMap: HardwareMap?) {
 
         PIVOT = hardwareMap!!.get(DcMotorEx::class.java, "PIVOT")
         PIVOT.direction = DcMotorSimple.Direction.REVERSE
+        PIVOTF = hardwareMap!!.get(DcMotorEx::class.java, "PIVOTF")
+        PIVOTF.direction = DcMotorSimple.Direction.REVERSE
         
         INTAKE = hardwareMap!!.get(CRServo::class.java, "INTAKE")
+        LINTAKE = hardwareMap!!.get(CRServo::class.java, "LINTAKE")
 
         ELEVATOR = hardwareMap!!.get(DcMotorEx::class.java, "ELEVATOR")
 
@@ -114,6 +122,8 @@ class Robot(hwMap: HardwareMap?) {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC
         IMU.initialize(parameters)
+
+        ODOSENSOR = hardwareMap!!.get(SparkFunOTOS::class.java, "ODOMETER")
 
     }
 
@@ -183,6 +193,30 @@ class Robot(hwMap: HardwareMap?) {
         BR.power = rightBackPower
 
         autoMode = MANUAL
+    }
+
+    fun forward(power: Double, timeMS: Int, opMode: LinearOpMode){
+        RCDrive(power, 0.0, 0.0)
+        opMode.sleep(timeMS.toLong())
+        stop()
+    }
+
+    fun backward(power: Double, timeMS: Int, opMode: LinearOpMode){
+        RCDrive(-power, 0.0, 0.0)
+        opMode.sleep(timeMS.toLong())
+        stop()
+    }
+
+    fun strafeLeft(power: Double, timeMS: Int, opMode: LinearOpMode){
+        RCDrive(0.0, -power, 0.0)
+        opMode.sleep(timeMS.toLong())
+        stop()
+    }
+
+    fun strafeRight(power: Double, timeMS: Int, opMode: LinearOpMode){
+        RCDrive(0.0, power, 0.0)
+        opMode.sleep(timeMS.toLong())
+        stop()
     }
 
 //    fun FCDrive(y: Double, x: Double, turn: Double) {

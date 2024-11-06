@@ -5,6 +5,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d
 import com.acmerobotics.roadrunner.geometry.Vector2d
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.hardware.DcMotor
 import com.qualcomm.robotcore.hardware.DcMotorEx
@@ -26,7 +27,7 @@ enum class Position {
     CLOSE, FAR
 }
 
-
+@Disabled
 // ALL PATHS ARE BASED ON THIS STARTING POSE
 @Autonomous(name = "AUTO")
 class AutoBlueFar: LinearOpMode() {
