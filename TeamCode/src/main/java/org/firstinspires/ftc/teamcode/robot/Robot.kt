@@ -1,8 +1,6 @@
 @file:Suppress("unused", "NAME_SHADOWING")
 package org.firstinspires.ftc.teamcode.robot
 
-import com.acmerobotics.roadrunner.geometry.Pose2d
-import com.acmerobotics.roadrunner.kinematics.MecanumKinematics
 import com.qualcomm.hardware.bosch.BNO055IMU
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS
@@ -307,15 +305,6 @@ class Robot(hwMap: HardwareMap?) {
         return wheelVelocities
     }
 
-    fun setDrivePower(drivePower: Pose2d) {
-        val powers = MecanumKinematics.robotToWheelVelocities(
-                drivePower,
-                1.0,
-                1.0,
-                lateralMultiplier
-        )
-        setMotorPowers(powers[0], powers[1], powers[2], powers[3])
-    }
     private fun setMotorPowers(v: Double, v1: Double, v2: Double, v3: Double) {
         FL.power = v
         BL.power = v1
