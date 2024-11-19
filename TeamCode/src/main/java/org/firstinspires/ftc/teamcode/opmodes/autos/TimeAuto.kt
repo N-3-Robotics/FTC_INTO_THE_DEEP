@@ -12,7 +12,8 @@ class TimeAuto: LinearOpMode() {
         val ROBOT = Robot(hwMap = hardwareMap)
 
         waitForStart()
-        ROBOT.forward(0.5,1000,this)
-        ROBOT.strafeRight(0.5, 1800, this)
+//        ROBOT.forward(0.5,1000,this)
+//        ROBOT.strafeRight(0.5, 1800, this)
+
     }
 }

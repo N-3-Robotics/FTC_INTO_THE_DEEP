@@ -138,7 +138,6 @@ public class SparkFunOTOSDrive extends MecanumDrive {
 
         estimatedPoseWriter.write(new PoseMessage(pose));
 
-        // RR localizer note:
         // OTOS velocity units happen to be identical to Roadrunners, so we don't need any conversion!
         return new PoseVelocity2d(new Vector2d(otosVel.x, otosVel.y),otosVel.h);
     }
