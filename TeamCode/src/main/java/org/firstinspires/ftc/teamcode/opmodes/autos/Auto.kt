@@ -1,49 +1,54 @@
 package org.firstinspires.ftc.teamcode.opmodes.autos
 
 import com.acmerobotics.roadrunner.Pose2d
+import com.acmerobotics.roadrunner.ProfileParams
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder
+import com.acmerobotics.roadrunner.TrajectoryActionFactory
 import com.acmerobotics.roadrunner.TrajectoryBuilder
-import com.acmerobotics.roadrunner.forwardProfile
-import com.fasterxml.jackson.databind.AnnotationIntrospector.ReferenceProperty.back
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import org.firstinspires.ftc.teamcode.MecanumDrive
 import org.firstinspires.ftc.teamcode.SparkFunOTOSDrive
-import org.firstinspires.ftc.teamcode.pipelines.depricated.AprilTagPipeline
+
+
+// import com.acmerobotics.rodrunner.drive.Drive
 
 class Auto: LinearOpMode() {
 
 
-//        val builder = TrajectoryBuilder(drive.poseEstimate, drive.trajectoryConstraints)
-//
-//        builder.forward(10.0)
-//        drive.followTrajectory(builder.build())
-
     override fun runOpMode() {
 
-            val DRIVE = MecanumDrive(hardwareMap)
-            val odo = SparkFunOTOSDrive(hardwareMap)
-            val path = DRIVE.actionBuilder(Pose2d(0.0,0.0,0.0))
-            val builder = TrajectoryBuilder(Pose2d(0.0, 0.0, 0.0), DRIVE.trajectoryConstraints)
-            val red = false
+        val initalPose = Pose2d(0.0, 0.0, 0.0)
+        val theDrive = SparkFunOTOSDrive(hardwareMap, initalPose)
+
+
         waitForStart()
 
-            builder.poseEstimate = Pose2d(0.0, 0.0, 0.0)
-            if (red) {
-                builder.forward(10.0)
-                builder.strafeRight(10.0)
-            }
-            else {
-                builder.forward(10.0)
-                builder.strafeLeft(10.0)
-            }
-            DRIVE.followTrajectory(path.build())
 
+
+            val traj = theDrive.actionBuilder(initalPose)
+
+
+
+                        .setTangent(0.0)
+                        .splineToLinearHeading(Pose2d(-48.0, -48.0, 90.0), Math.PI / 2)
+                        // INSERT ARM CODE HERE
+                        .lineToX(5.0)
+                        .turn(Math.toRadians(270.0))
+                        .lineToYConstantHeading(40.0)
+                        // INSERT ARM CODE HERE
+                        .lineToY(0.0)
+                        .turn(Math.toRadians(0.0))
+                        .setTangent(0.0)
+                        .splineToLinearHeading(Pose2d(-48.0, -60.0, 90.0), Math.PI / 2)
+                        // INSERT ARM CODE HERE
+                        .lineToX(5.0)
+                        .turn(Math.toRadians(270.0))
+                        .lineToYConstantHeading(40.0)
+
+
+                        .build()
 
     }
-
-    private fun TrajectoryBuilder(pose2d: Pose2d, trajectoryConstraints: Any): Any {
-
-    return TrajectoryBuilder(pose2d, trajectoryConstraints)
-    }
-
 }
 
+// 3:14 PM 12/5/2024
