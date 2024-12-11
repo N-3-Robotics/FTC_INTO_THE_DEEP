@@ -85,28 +85,30 @@ class TeleOP: LinearOpMode() {
 
 
 
+//
+//            if (-gamepad2.left_stick_y.toDouble() > 0.0) {
+//                ROBOT.PIVOT.power = -gamepad2.left_stick_y.toDouble() * 0.65
+//                ROBOT.PIVOTF.power = -gamepad2.left_stick_y.toDouble() * 0.65
+//            }
+//
+//            else if (-gamepad2.left_stick_y.toDouble() < 0.0) {
+//                if (ROBOT.LIFT.currentPosition > 1500) {
+//                    ROBOT.PIVOT.power = lerp(0.1, 0.0, gamepad2.left_stick_y.toDouble())
+//                    ROBOT.PIVOTF.power = lerp(0.1, 0.0, gamepad2.left_stick_y.toDouble())
+//                }
+//                else {
+//                    ROBOT.PIVOT.power = lerp(0.1, -0.3, gamepad2.left_stick_y.toDouble())
+//                    ROBOT.PIVOTF.power = lerp(0.1, -0.3, gamepad2.left_stick_y.toDouble())
+//
+//                }
+//            }
+//            else {
+//                ROBOT.PIVOT.power = 0.1
+//
+//            }
 
-            if (-gamepad2.left_stick_y.toDouble() > 0.0) {
-                ROBOT.PIVOT.power = -gamepad2.left_stick_y.toDouble() * 0.65
-                ROBOT.PIVOTF.power = -gamepad2.left_stick_y.toDouble() * 0.65
-            }
 
-            else if (-gamepad2.left_stick_y.toDouble() < 0.0) {
-                if (ROBOT.LIFT.currentPosition > 1500) {
-                    ROBOT.PIVOT.power = lerp(0.1, 0.0, gamepad2.left_stick_y.toDouble())
-                    ROBOT.PIVOTF.power = lerp(0.1, 0.0, gamepad2.left_stick_y.toDouble())
-                }
-                else {
-                    ROBOT.PIVOT.power = lerp(0.1, -0.3, gamepad2.left_stick_y.toDouble())
-                    ROBOT.PIVOTF.power = lerp(0.1, -0.3, gamepad2.left_stick_y.toDouble())
-
-                }
-            }
-            else {
-                ROBOT.PIVOT.power = 0.1
-
-            }
-
+            ROBOT.PIVOT.power = gamepad2.left_stick_y.toDouble()
 
 
             // if right bumper is pressed, set the power of INTAKE to .25, else set it to 0

@@ -174,7 +174,7 @@ class Robot(hwMap: HardwareMap?) {
     }
 
     fun RCDrive(y: Double, x: Double, rx: Double) {
-        val x = -x * strafeMultiplier
+        val x = x * strafeMultiplier
 
         //val denominator = max(abs(y) + abs(x) + abs(rx), 1.0).toDouble()
 
