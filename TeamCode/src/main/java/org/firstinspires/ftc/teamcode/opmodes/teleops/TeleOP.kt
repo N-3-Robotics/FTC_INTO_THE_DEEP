@@ -48,10 +48,19 @@ class TeleOP: LinearOpMode() {
         var MaxExtention = 10
         var MinExtension = 1
 
+        val isLimited = true
+
 
 
         ROBOT.PIVOT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+
+
+        while (ROBOT.PIVOT.currentPosition < 2167) {
+            ROBOT.PIVOT.power = 0.5
+        }
+
+        ROBOT.PIVOT.power = 0.0
 
         ROBOT.LIFT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         ROBOT.LIFT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
@@ -59,7 +68,8 @@ class TeleOP: LinearOpMode() {
         var intakePower: Double = 0.0
         var lastIntakePower = intakePower
 
-        var liftPower = 0.0
+        var liftPower: Double = 0.0
+        var pivotPower: Double = 0.0
 
         waitForStart()
         /* END - STARTING ROBOT */
@@ -68,55 +78,64 @@ class TeleOP: LinearOpMode() {
             telemetry.addData("Loop Time", timer.milliseconds())
             timer.reset()
 
+
+
+
+
+
             /* DRIVER 2 */
 
-            val maxExtension = lerp(0.0, 3600.0, (1500.0 - abs(ROBOT.PIVOT.currentPosition))/1260.0) + 700
+            pivotPower = gamepad2.left_stick_y.toDouble()
 
-            if (liftPower !=  0.1 && ROBOT.LIFT.currentPosition > 2000) {
-                liftPower = 0.1
+            val pivotPOS = ROBOT.PIVOT.currentPosition
+
+            if (pivotPOS >= 3200 && pivotPower > 0) {
+                pivotPower = 0.0
             }
+            else if (pivotPOS < 0 && pivotPower < 0) {
+                pivotPower = 0.0
+            }
+
+            if (gamepad2.share) {
+                ROBOT.PIVOT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+                ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+            }
+
+
+
+
+
+
+
+            // 2184 is limit when all the way down.
+            val maxExtension = 2184 + lerp(0.0, 3700.0-2184, (pivotPOS / 3200.0))
+
+
 
             liftPower = -gamepad2.right_stick_y.toDouble()
 
+            if (liftPower == 0.0 && ROBOT.LIFT.currentPosition > 1500 && pivotPOS > 2500) {
+                liftPower = 0.1
+            }
+
             // if the Lift is past the Max extension, set the power to -0.1
-            if (ROBOT.LIFT.currentPosition > maxExtension) {
-                liftPower = -0.5
+            if (isLimited) {
+                if (ROBOT.LIFT.currentPosition > maxExtension) {
+                    liftPower = -0.5
+                }
+            }
+
+            if (gamepad2.options) {
+                ROBOT.LIFT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+                ROBOT.LIFT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
             }
 
 
-
-//
-//            if (-gamepad2.left_stick_y.toDouble() > 0.0) {
-//                ROBOT.PIVOT.power = -gamepad2.left_stick_y.toDouble() * 0.65
-//                ROBOT.PIVOTF.power = -gamepad2.left_stick_y.toDouble() * 0.65
-//            }
-//
-//            else if (-gamepad2.left_stick_y.toDouble() < 0.0) {
-//                if (ROBOT.LIFT.currentPosition > 1500) {
-//                    ROBOT.PIVOT.power = lerp(0.1, 0.0, gamepad2.left_stick_y.toDouble())
-//                    ROBOT.PIVOTF.power = lerp(0.1, 0.0, gamepad2.left_stick_y.toDouble())
-//                }
-//                else {
-//                    ROBOT.PIVOT.power = lerp(0.1, -0.3, gamepad2.left_stick_y.toDouble())
-//                    ROBOT.PIVOTF.power = lerp(0.1, -0.3, gamepad2.left_stick_y.toDouble())
-//
-//                }
-//            }
-//            else {
-//                ROBOT.PIVOT.power = 0.1
-//
-//            }
-
-
-            ROBOT.PIVOT.power = gamepad2.left_stick_y.toDouble()
 
 
             // if right bumper is pressed, set the power of INTAKE to .25, else set it to 0
             if (gamepad2.right_bumper || gamepad2.left_bumper) {
-
                 intakePower = 1.0
-
-
             } else {
                 intakePower = 0.0
             }
@@ -136,13 +155,7 @@ class TeleOP: LinearOpMode() {
             }
             lastIntakePower = intakePower
 
-            // if right_trigger + right_stick, set the ELEVATOR power to 1.0, else set it to 0
-            // ACTUAROR CONTROLS - ELEVATOR
-//            if (gamepad2.right_trigger > 0) {
-//                ROBOT.ELEVATOR.power = -gamepad2.right_stick_y.toDouble()
-//            } else {
-//                ROBOT.ELEVATOR.power = 0.0
-//            }
+
 
             when {
                 gamepad1.cross -> {
@@ -169,11 +182,14 @@ class TeleOP: LinearOpMode() {
 
             ROBOT.LIFT.power = liftPower
 
+            ROBOT.PIVOT.power = pivotPower
+
 
             telemetry.addData("LIFT STATE", LiftState)
             telemetry.addData("Launcher Safety", Safety)
 
-            telemetry.addData("Pivot Position", ROBOT.PIVOT.currentPosition)
+            telemetry.addData("PIVOT POWER", pivotPower)
+            telemetry.addData("Pivot Position", pivotPOS)
 
             telemetry.addData("Lift Position", ROBOT.LIFT.currentPosition)
 
