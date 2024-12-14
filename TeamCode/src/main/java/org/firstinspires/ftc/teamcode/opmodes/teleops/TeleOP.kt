@@ -56,8 +56,10 @@ class TeleOP: LinearOpMode() {
         ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
 
-        while (ROBOT.PIVOT.currentPosition < 2167) {
-            ROBOT.PIVOT.power = 0.5
+        if (abs(ROBOT.PIVOT.currentPosition-2167) < 30) {
+            while (ROBOT.PIVOT.currentPosition < 2167) {
+                ROBOT.PIVOT.power = 0.5
+            }
         }
 
         ROBOT.PIVOT.power = 0.0
