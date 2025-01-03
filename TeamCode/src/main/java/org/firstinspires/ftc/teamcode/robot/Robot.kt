@@ -30,14 +30,11 @@ class Robot(hwMap: HardwareMap?) {
 
     var LIFT: DcMotorEx
     var PIVOT: DcMotorEx
-    var PIVOTF: DcMotorEx
 
     var ELEVATOR: DcMotorEx
 
     var INTAKE: CRServo
     var LINTAKE: CRServo
-
-    var LOCK: Servo
 
     var IMU: BNO055IMU
 
@@ -83,20 +80,14 @@ class Robot(hwMap: HardwareMap?) {
         LIFT.direction = DcMotorSimple.Direction.REVERSE
 
         PIVOT = hardwareMap!!.get(DcMotorEx::class.java, "PIVOT")
-        PIVOT.direction = DcMotorSimple.Direction.REVERSE
-        PIVOTF = hardwareMap!!.get(DcMotorEx::class.java, "PIVOTF")
-        PIVOTF.direction = DcMotorSimple.Direction.REVERSE
+
         
         INTAKE = hardwareMap!!.get(CRServo::class.java, "INTAKE")
         LINTAKE = hardwareMap!!.get(CRServo::class.java, "LINTAKE")
 
         ELEVATOR = hardwareMap!!.get(DcMotorEx::class.java, "ELEVATOR")
 
-        
 
-         
-
-        LOCK = hardwareMap!!.get(Servo::class.java, "LOCK")
 
         FL.direction = DcMotorSimple.Direction.REVERSE
         BL.direction = DcMotorSimple.Direction.REVERSE

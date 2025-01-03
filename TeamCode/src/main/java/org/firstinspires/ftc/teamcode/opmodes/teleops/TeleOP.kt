@@ -56,10 +56,20 @@ class TeleOP: LinearOpMode() {
         ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
 
 
-        if (abs(ROBOT.PIVOT.currentPosition-2167) < 50) {
+        if (abs(ROBOT.PIVOT.currentPosition-2167) > 50) {
             while (ROBOT.PIVOT.currentPosition < 2167) {
                 ROBOT.PIVOT.power = 0.5
+                telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
+                telemetry.update()
             }
+            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
+            telemetry.addLine("Arm Pivot SET")
+            telemetry.update()
+        }
+        else {
+            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
+            telemetry.addLine("Arm Pivot SET")
+            telemetry.update()
         }
 
         ROBOT.PIVOT.power = 0.0
@@ -122,8 +132,11 @@ class TeleOP: LinearOpMode() {
 
             // if the Lift is past the Max extension, set the power to -0.1
             if (isLimited) {
-                if (ROBOT.LIFT.currentPosition > maxExtension) {
-                    liftPower = -0.5
+                if (ROBOT.LIFT.currentPosition > maxExtension && liftPower > 0.0) {
+                    liftPower = -0.1
+                }
+                else if (ROBOT.LIFT.currentPosition < 0 && liftPower < 0) {
+                    liftPower = 0.0
                 }
             }
 
