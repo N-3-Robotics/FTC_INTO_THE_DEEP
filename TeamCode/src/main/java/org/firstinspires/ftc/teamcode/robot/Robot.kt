@@ -38,7 +38,6 @@ class Robot(hwMap: HardwareMap?) {
 
     var IMU: BNO055IMU
 
-    var ODOSENSOR: SparkFunOTOS
 
     val trackWidth = 12.0
     val wheelBase = 9.5
@@ -112,7 +111,6 @@ class Robot(hwMap: HardwareMap?) {
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC
         IMU.initialize(parameters)
 
-        ODOSENSOR = hardwareMap!!.get(SparkFunOTOS::class.java, "ODOMETER")
 
     }
 
