@@ -19,7 +19,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-@Disabled
+
 @Autonomous(name="Auto", group="Autos")
 public class Auto extends LinearOpMode {
     public class Lift {
@@ -159,6 +159,8 @@ public class Auto extends LinearOpMode {
                 .strafeTo(new Vector2d(-34, 0))
                 .build();
 
+
+        waitForStart();
         Actions.runBlocking(new SequentialAction(step1, step2, step3, step4));
     }
 }
