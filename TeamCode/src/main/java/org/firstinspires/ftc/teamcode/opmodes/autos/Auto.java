@@ -22,124 +22,17 @@ import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 @Autonomous(name="Auto", group="Autos")
 public class Auto extends LinearOpMode {
-    public class Lift {
-        private DcMotorEx lift;
-
-        public Lift(HardwareMap hardwareMap) {
-            lift = hardwareMap.get(DcMotorEx.class, "LIFT");
-            lift.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
-            lift.setDirection(DcMotorEx.Direction.REVERSE);
-        }
-
-        public class LiftUp implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    initialized = true;
-                    lift.setPower(1);
-                }
-
-                double pos = lift.getCurrentPosition();
-                telemetryPacket.put("liftPos", pos);
-
-                if (pos < 3000.0) {
-                    return true;
-                }
-                else {
-                    lift.setPower(0);
-                    return false;
-                }
-            }
-        }
-
-        public Action liftUp() {
-            return new LiftUp();
-        }
-
-        public class LiftDown implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    initialized = true;
-                    lift.setPower(-1);
-                }
-
-                double pos = lift.getCurrentPosition();
-                telemetryPacket.put("liftPos", pos);
-
-                if (pos > 0.0) {
-                    return true;
-                }
-                else {
-                    lift.setPower(0);
-                    return false;
-                }
-            }
-        }
-    }
-
-    public class PIVOT {
-        private DcMotorEx pivot;
-
-        public PIVOT(HardwareMap hardwareMap) {
-            pivot = hardwareMap.get(DcMotorEx.class, "PIVOT");
-        }
-
-        public class PivotUp implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    initialized = true;
-
-                }
-
-                return true;
-            }
-        }
-
-        public Action pivotUp() {
-            return new PivotUp();
-        }
-
-        public class PivotDown implements Action {
-            private boolean initialized = false;
-
-            @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                if (!initialized) {
-                    initialized = true;
-
-                }
-
-                return true;
-            }
-        }
-
-        public Action pivotDown() {
-            return new PivotDown();
-        }
-
-
-    }
-
 
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initialPose = new Pose2d(36, -(60+((double) (24-17)/2)), Math.toRadians(90.0));
+        Pose2d initialPose = new Pose2d(24, -(60+((double) (24-17)/2)), Math.toRadians(90.0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
-        Lift lift = new Lift(hardwareMap);
-        PIVOT pivot = new PIVOT(hardwareMap);
+
 
         Action step1 = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(36, -42))
+                .strafeTo(new Vector2d(24, -42))
                 .strafeTo(new Vector2d(-48.0, -42.0))
                 .strafeTo(new Vector2d(-48.0, -48.0))
                 .turnTo(Math.toRadians(-135.0))
@@ -156,7 +49,7 @@ public class Auto extends LinearOpMode {
                 .build();
 
         Action step4 = drive.actionBuilder(new Pose2d(-48, -48, Math.toRadians(-135)))
-                .strafeTo(new Vector2d(-34, 0))
+                .strafeTo(new Vector2d(-34, -12))
                 .build();
 
 

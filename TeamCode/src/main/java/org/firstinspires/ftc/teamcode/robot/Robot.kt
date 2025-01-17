@@ -31,7 +31,6 @@ class Robot(hwMap: HardwareMap?) {
     var LIFT: DcMotorEx
     var PIVOT: DcMotorEx
 
-    var ELEVATOR: DcMotorEx
 
     var INTAKE: CRServo
     var LINTAKE: CRServo
@@ -83,8 +82,6 @@ class Robot(hwMap: HardwareMap?) {
         
         INTAKE = hardwareMap!!.get(CRServo::class.java, "INTAKE")
         LINTAKE = hardwareMap!!.get(CRServo::class.java, "LINTAKE")
-
-        ELEVATOR = hardwareMap!!.get(DcMotorEx::class.java, "ELEVATOR")
 
 
 
