@@ -32,45 +32,12 @@ class TeleOP: LinearOpMode() {
 
         val ROBOT = Robot(hardwareMap)
 
-        var d1Clone: Gamepad = Gamepad()
-        var d2Clone: Gamepad = Gamepad()
-
-        d1Clone.copy(gamepad1)
-        d2Clone.copy(gamepad2)
 
         var m = 0.5
 
 
-        var Safety = true
-
-        var LiftState = READY
-
-        var MaxExtention = 10
-        var MinExtension = 1
-
         val isLimited = true
 
-
-
-//        ROBOT.PIVOT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-//        ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-//
-//
-//        if (abs(ROBOT.PIVOT.currentPosition-2167) > 50) {
-//            while (ROBOT.PIVOT.currentPosition < 2167) {
-//                ROBOT.PIVOT.power = 0.5
-//                telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
-//                telemetry.update()
-//            }
-//            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
-//            telemetry.addLine("Arm Pivot SET")
-//            telemetry.update()
-//        }
-//        else {
-//            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
-//            telemetry.addLine("Arm Pivot SET")
-//            telemetry.update()
-//        }
 
         ROBOT.PIVOT.power = 0.0
 
@@ -94,9 +61,9 @@ class TeleOP: LinearOpMode() {
 
 
 
-
             /* DRIVER 2 */
 
+            /* PIVOT CONTROL */
             pivotPower = gamepad2.left_stick_y.toDouble()
 
             val pivotPOS = ROBOT.PIVOT.currentPosition
@@ -113,16 +80,11 @@ class TeleOP: LinearOpMode() {
                 ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
             }
 
+            /* END - PIVOT CONTROL*/
 
 
-
-
-
-
-            // 2184 is limit when all the way down.
+            // 2184 is limit when pivot is all the way down.
             val maxExtension = 2184 + lerp(0.0, 3700.0-2184, (pivotPOS / 3200.0))
-
-
 
             liftPower = -gamepad2.right_stick_y.toDouble()
 
@@ -132,7 +94,7 @@ class TeleOP: LinearOpMode() {
 
             // if the Lift is past the Max extension, set the power to -0.1
             if (isLimited) {
-                if (ROBOT.LIFT.currentPosition > maxExtension && liftPower > 0.0) {
+                if (ROBOT.LIFT.currentPosition > maxExtension && (liftPower > 0.0 || pivotPower < 0.0)) {
                     liftPower = -0.1
                 }
                 else if (ROBOT.LIFT.currentPosition < 0 && liftPower < 0) {
@@ -169,7 +131,7 @@ class TeleOP: LinearOpMode() {
             lastIntakePower = intakePower
 
 
-
+            /* DRIVETRAIN SPEED CONTROL */
             when {
                 gamepad1.cross -> {
                     m = 0.25
@@ -188,18 +150,12 @@ class TeleOP: LinearOpMode() {
 
             /* ACTION LOOP */
 
-            d1Clone.copy(gamepad1)
-            d2Clone.copy(gamepad2)
-
             ROBOT.gamepadDrive(gamepad1, m)
 
             ROBOT.LIFT.power = liftPower
 
             ROBOT.PIVOT.power = pivotPower
 
-
-            telemetry.addData("LIFT STATE", LiftState)
-            telemetry.addData("Launcher Safety", Safety)
 
             telemetry.addData("PIVOT POWER", pivotPower)
             telemetry.addData("Pivot Position", pivotPOS)
@@ -213,20 +169,6 @@ class TeleOP: LinearOpMode() {
             telemetry.update()
             /* END - ACTION LOOP */
         }
-//        // Reset the robot after the program ends
-//        if (ROBOT.PIVOT.currentPosition > 0.0 || ROBOT.LIFT.currentPosition > 0.0){
-//            ROBOT.PIVOT.targetPosition = 0
-//            ROBOT.LIFT.targetPosition = 0
-//
-//            ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_TO_POSITION
-//            ROBOT.LIFT.mode = DcMotor.RunMode.RUN_TO_POSITION
-//
-//            while (ROBOT.LIFT.currentPosition > 100) {
-//                sleep(500)
-//            }
-//        }
-
-        
     }
 
     /* END - FUNCTIONS */
