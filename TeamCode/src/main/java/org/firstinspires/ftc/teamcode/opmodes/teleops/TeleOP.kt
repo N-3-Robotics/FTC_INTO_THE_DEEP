@@ -52,25 +52,25 @@ class TeleOP: LinearOpMode() {
 
 
 
-        ROBOT.PIVOT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
-
-
-        if (abs(ROBOT.PIVOT.currentPosition-2167) > 50) {
-            while (ROBOT.PIVOT.currentPosition < 2167) {
-                ROBOT.PIVOT.power = 0.5
-                telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
-                telemetry.update()
-            }
-            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
-            telemetry.addLine("Arm Pivot SET")
-            telemetry.update()
-        }
-        else {
-            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
-            telemetry.addLine("Arm Pivot SET")
-            telemetry.update()
-        }
+//        ROBOT.PIVOT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
+//        ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
+//
+//
+//        if (abs(ROBOT.PIVOT.currentPosition-2167) > 50) {
+//            while (ROBOT.PIVOT.currentPosition < 2167) {
+//                ROBOT.PIVOT.power = 0.5
+//                telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
+//                telemetry.update()
+//            }
+//            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
+//            telemetry.addLine("Arm Pivot SET")
+//            telemetry.update()
+//        }
+//        else {
+//            telemetry.addData("RESETTING; CURRENT ERROR", abs(ROBOT.PIVOT.currentPosition-2167))
+//            telemetry.addLine("Arm Pivot SET")
+//            telemetry.update()
+//        }
 
         ROBOT.PIVOT.power = 0.0
 
@@ -158,8 +158,6 @@ class TeleOP: LinearOpMode() {
             // if left bumper is pressed, set the power of INTAKE to -.25, else set it to 0
             if (gamepad2.left_trigger.toDouble() > 0.0 || gamepad2.right_trigger.toDouble() > 0.0) {
                 intakePower = -1.0
-//                ROBOT.INTAKE.power = -1.0
-//                ROBOT.LINTAKE.power = 1.0
             }
 
 

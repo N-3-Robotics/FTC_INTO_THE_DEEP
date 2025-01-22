@@ -2,33 +2,26 @@ package org.firstinspires.ftc.teamcode.opmodes.autos;
 
 import androidx.annotation.NonNull;
 
-import com.acmerobotics.roadrunner.Trajectory;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-
-// RR-specific imports
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-
-// Non-RR imports
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
 
-@Autonomous(name="Auto", group="Autos")
-public class Auto extends LinearOpMode {
+@Autonomous(name="Step 1", group="Autos")
+public class StepOne extends LinearOpMode {
 
     public class Lift {
         private DcMotorEx lift;
@@ -36,7 +29,10 @@ public class Auto extends LinearOpMode {
         public Lift(HardwareMap hardwareMap) {
             lift = hardwareMap.get(DcMotorEx.class, "LIFT");
             lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            lift.setDirection(DcMotorSimple.Direction.FORWARD);
+            lift.setDirection(DcMotorSimple.Direction.REVERSE);
+
+            lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         }
 
         public class LiftUp implements Action {
@@ -51,7 +47,7 @@ public class Auto extends LinearOpMode {
 
                 double pos = lift.getCurrentPosition();
                 packet.put("liftPos", pos);
-                if (pos < 3000.0) {
+                if (pos < 4000.0) {
                     return true;
                 } else {
                     lift.setPower(0);
@@ -75,7 +71,7 @@ public class Auto extends LinearOpMode {
 
                 double pos = lift.getCurrentPosition();
                 packet.put("liftPos", pos);
-                if (pos > 100.0) {
+                if (pos > 200.0) {
                     return true;
                 } else {
                     lift.setPower(0);
@@ -109,13 +105,13 @@ public class Auto extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    pivot.setPower(-0.8);
+                    pivot.setPower(0.8);
                     initialized = true;
                 }
 
                 double pos = pivot.getCurrentPosition();
                 packet.put("pivotPos", pos);
-                if (pos < 3000.0) {
+                if (pos < 3205.0) {
                     return true;
                 } else {
                     pivot.setPower(0);
@@ -133,7 +129,7 @@ public class Auto extends LinearOpMode {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 if (!initialized) {
-                    pivot.setPower(0.8);
+                    pivot.setPower(-0.8);
                     initialized = true;
                 }
 
@@ -228,7 +224,7 @@ public class Auto extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        Pose2d initialPose = new Pose2d(24, -(60+((double) (24-17)/2)), Math.toRadians(90.0));
+        Pose2d initialPose = new Pose2d(-24, -(60+((double) (24-17)/2)), Math.toRadians(90.0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
 
         Lift LIFT = new Lift(hardwareMap);
@@ -238,9 +234,7 @@ public class Auto extends LinearOpMode {
 
 
         TrajectoryActionBuilder step1 = drive.actionBuilder(initialPose)
-                .strafeTo(new Vector2d(24, -42))
-                .strafeTo(new Vector2d(-48.0, -42.0))
-                .strafeTo(new Vector2d(-48.0, -48.0))
+                .strafeTo(new Vector2d(-55.0, -55.0))
                 .turnTo(Math.toRadians(-135.0));
 
         TrajectoryActionBuilder step2 = step1.endTrajectory().fresh()
@@ -267,20 +261,16 @@ public class Auto extends LinearOpMode {
 
         Actions.runBlocking(new SequentialAction(
                 s1,
-//                PIVOT.pivotUp(),
-//                LIFT.liftUp(),
-//                CLAW.outtake(),
-//                LIFT.liftDown(),
-                s2,
-//                PIVOT.pivotDown(),
-//                CLAW.intake(),
-//                PIVOT.pivotReset(),
-                s3,
-//                PIVOT.pivotUp(),
-//                LIFT.liftUp(),
-//                CLAW.outtake(),
-//                LIFT.liftDown(),
-
+                PIVOT.pivotUp(),
+                LIFT.liftUp(),
+                CLAW.outtake(),
+                LIFT.liftDown(),
+//                s3,
+////                PIVOT.pivotUp(),
+////                LIFT.liftUp(),
+////                CLAW.outtake(),
+////                LIFT.liftDown(),
+//
                 step4
             ));
     }

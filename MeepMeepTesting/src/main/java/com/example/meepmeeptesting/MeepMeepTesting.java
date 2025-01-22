@@ -16,20 +16,21 @@ public class MeepMeepTesting {
                 .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 155)
                 .build();
 
-        Pose2d initialPose = new Pose2d(36, -(60+((double) (24-17)/2)), Math.toRadians(90.0));
+        Pose2d initialPose = new Pose2d(-36, -(60+((double) (24-17)/2)), Math.toRadians(90.0));
 
         TrajectoryActionBuilder step1 = myBot.getDrive()
                 .actionBuilder(initialPose)
-                .lineToY(-36.0)
-                .strafeTo(new Vector2d(-48.0, -35.0))
                 .strafeTo(new Vector2d(-48.0, -48.0))
                 .turnTo(Math.toRadians(-135.0))
+                .waitSeconds(3)
 
                 .strafeTo(new Vector2d(-36.0, -24.0-2.25))
                 .turnTo(Math.toRadians(180.0))
+                .waitSeconds(3)
 
                 .strafeTo(new Vector2d(-48, -48))
                 .turnTo(Math.toRadians(-135.0))
+                .waitSeconds(3)
 
                 .strafeTo(new Vector2d(-34, 0));
 
