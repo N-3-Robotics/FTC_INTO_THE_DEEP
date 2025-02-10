@@ -27,37 +27,32 @@ class DRIVETRAIN(opmode: LinearOpMode?) {
         drive = MecanumDrive(hwMap, initialPose)
     }
 
-    inner class GPDRIVE(x: Double, y: Double, rx: Double) : Action {
+    fun GPDRIVE() {
 
-        val x = x * strafeMultiplier
-        val y = y
-        val rx = rx
+        val x = opmode!!.gamepad1.left_stick_x.toDouble() * multiplier* strafeMultiplier
+
+        val y = -opmode!!.gamepad1.left_stick_y.toDouble() * multiplier
+        val rx = -opmode!!.gamepad1.right_stick_x.toDouble() * multiplier
 
 
-        override fun run(p: TelemetryPacket): Boolean {
 
-            // Combine the joystick requests for each axis-motion to determine each wheel's power.
-            // Set up a variable for each drive wheel to save the power level for telemetry.
-            val leftFrontPower: Double = y + x + rx
-            val rightFrontPower: Double = y - x - rx
-            val leftBackPower: Double = y - x + rx
-            val rightBackPower: Double = y + x - rx
 
-            drive.leftFront.power = leftFrontPower
-            drive.leftBack.power = leftBackPower
-            drive.rightFront.power = rightFrontPower
-            drive.rightBack.power = rightBackPower
+        // Combine the joystick requests for each axis-motion to determine each wheel's power.
+        // Set up a variable for each drive wheel to save the power level for telemetry.
+        val leftFrontPower: Double = y + x + rx
+        val rightFrontPower: Double = y - x - rx
+        val leftBackPower: Double = y - x + rx
+        val rightBackPower: Double = y + x - rx
 
-            drive.updatePoseEstimate()
-            return false
-        }
+        drive.leftFront.power = leftFrontPower
+        drive.leftBack.power = leftBackPower
+        drive.rightFront.power = rightFrontPower
+        drive.rightBack.power = rightBackPower
+
+        drive.updatePoseEstimate()
     }
 
-    fun gamepadDrive(): Action {
-        return GPDRIVE(opmode!!.gamepad1.left_stick_x.toDouble(), -opmode!!.gamepad1.left_stick_y.toDouble(), opmode!!.gamepad1.right_stick_x.toDouble())
-    }
 
-    //create an action that takes the robot to a specific position
 
 
 

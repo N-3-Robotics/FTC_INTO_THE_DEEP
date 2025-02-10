@@ -33,8 +33,11 @@ class Robot(hwMap: HardwareMap?) {
     var CPIVOT: DcMotorEx
 
 
+
+
     var INTAKE: CRServo
     var LINTAKE: CRServo
+    var WRIST: Servo
 
     var IMU: BNO055IMU
 
@@ -85,8 +88,9 @@ class Robot(hwMap: HardwareMap?) {
         
         INTAKE = hardwareMap!!.get(CRServo::class.java, "INTAKE")
         LINTAKE = hardwareMap!!.get(CRServo::class.java, "LINTAKE")
+        LINTAKE.direction = DcMotorSimple.Direction.REVERSE
 
-
+        WRIST = hardwareMap!!.get(Servo::class.java, "WRIST")
 
         FL.direction = DcMotorSimple.Direction.REVERSE
         BL.direction = DcMotorSimple.Direction.REVERSE
@@ -205,16 +209,6 @@ class Robot(hwMap: HardwareMap?) {
         opMode.sleep(timeMS.toLong())
         stop()
     }
-
-//    fun FCDrive(y: Double, x: Double, turn: Double) {
-//        /*val x = x * strafeMultiplier
-//        val rotX = x * cos(-botHeading) - y * sin(-botHeading)
-//        val rotY = y * sin(-botHeading) + x * cos(-botHeading)*/
-//
-//        val input = Vector2d(y, -x).rotated(-botHeading)
-//
-//        RCDrive(input.y, input.x, turn)
-//    }
 
     fun gamepadDrive(controller: Gamepad, multiplier: Double) {
         RCDrive(

@@ -112,15 +112,22 @@ class TeleOP: LinearOpMode() {
 
 
             // if right bumper is pressed, set the power of INTAKE to .25, else set it to 0
-            if (gamepad2.right_bumper || gamepad2.left_bumper) {
+            if (gamepad2.right_bumper) {
                 intakePower = 1.0
-            } else {
+            }
+            else if (gamepad2.left_bumper) {
+                intakePower = -1.0
+            }
+            else {
                 intakePower = 0.0
             }
 
-            // if left bumper is pressed, set the power of INTAKE to -.25, else set it to 0
-            if (gamepad2.left_trigger.toDouble() > 0.0 || gamepad2.right_trigger.toDouble() > 0.0) {
-                intakePower = -1.0
+            //use right trigger to increment the wrist position up, and left trigger to spin the wrist down.  The se
+            if (gamepad2.right_trigger > 0.0) {
+                ROBOT.WRIST.position += 0.01
+            }
+            else if (gamepad2.left_trigger > 0.0) {
+                ROBOT.WRIST.position -= 0.01
             }
 
 

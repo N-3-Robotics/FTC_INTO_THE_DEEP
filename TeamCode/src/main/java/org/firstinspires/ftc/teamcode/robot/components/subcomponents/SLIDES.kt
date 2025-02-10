@@ -16,18 +16,9 @@ class SLIDES(slideMotor: DcMotorEx) {
         SLIDEM.setDirection(DcMotorSimple.Direction.FORWARD)
     }
 
-    //ACTION to set the power of the slides
-    inner class SETPOWER(power: Double) : Action {
-        val power = power
 
-        override fun run(p: TelemetryPacket): Boolean {
-            SLIDEM.power = power
-            return false
-        }
-    }
-
-    fun setPower(power: Double): Action {
-        return SETPOWER(power)
+    fun setPower(power: Double) {
+        SLIDEM.power = power
     }
 
     //ACTION to set the position of the slides
