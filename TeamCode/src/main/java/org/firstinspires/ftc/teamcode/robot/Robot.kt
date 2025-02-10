@@ -30,6 +30,7 @@ class Robot(hwMap: HardwareMap?) {
 
     var LIFT: DcMotorEx
     var PIVOT: DcMotorEx
+    var CPIVOT: DcMotorEx
 
 
     var INTAKE: CRServo
@@ -78,6 +79,8 @@ class Robot(hwMap: HardwareMap?) {
         LIFT.direction = DcMotorSimple.Direction.REVERSE
 
         PIVOT = hardwareMap!!.get(DcMotorEx::class.java, "PIVOT")
+        CPIVOT = hardwareMap!!.get(DcMotorEx::class.java, "CPIVOT")
+        CPIVOT.direction = DcMotorSimple.Direction.REVERSE
 
         
         INTAKE = hardwareMap!!.get(CRServo::class.java, "INTAKE")

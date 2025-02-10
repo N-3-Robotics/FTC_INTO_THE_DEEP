@@ -40,6 +40,7 @@ class TeleOP: LinearOpMode() {
 
 
         ROBOT.PIVOT.power = 0.0
+        ROBOT.CPIVOT.power = 0.0
 
         ROBOT.LIFT.mode = DcMotor.RunMode.STOP_AND_RESET_ENCODER
         ROBOT.LIFT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
@@ -155,6 +156,7 @@ class TeleOP: LinearOpMode() {
             ROBOT.LIFT.power = liftPower
 
             ROBOT.PIVOT.power = pivotPower
+            ROBOT.CPIVOT.power = pivotPower
 
 
             telemetry.addData("PIVOT POWER", pivotPower)
