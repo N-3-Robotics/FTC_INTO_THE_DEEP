@@ -178,6 +178,8 @@ class TeleOP: LinearOpMode() {
             telemetry.addLine("")
             telemetry.addData("WRIST POS", ROBOT.WRIST.position)
 
+            telemetry.addData("WRIST POS", ROBOT.WRIST.position)
+
             telemetry.update()
             /* END - ACTION LOOP */
         }
