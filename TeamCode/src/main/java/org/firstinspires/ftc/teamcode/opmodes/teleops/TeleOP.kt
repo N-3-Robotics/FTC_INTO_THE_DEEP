@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes.teleops
 
 import com.acmerobotics.dashboard.FtcDashboard
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry
+import com.qualcomm.robotcore.eventloop.opmode.Disabled
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import com.qualcomm.robotcore.hardware.DcMotor
@@ -19,6 +20,7 @@ private enum class Lift {
     LOWER, READY, CLOSE, GUARANOP
 }
 
+@Disabled
 @TeleOp(name = "TeleOp")
 class TeleOP: LinearOpMode() {
     override fun runOpMode() {
@@ -124,17 +126,17 @@ class TeleOP: LinearOpMode() {
 
             //use right trigger to increment the wrist position up, and left trigger to spin the wrist down.  The se
             if (gamepad2.right_trigger > 0.0) {
-                ROBOT.WRIST.position += 0.01
+                ROBOT.WRIST.position -= 0.01
             }
             else if (gamepad2.left_trigger > 0.0) {
-                ROBOT.WRIST.position -= 0.01
+                ROBOT.WRIST.position += 0.01
             }
 
 
 
             if (intakePower != lastIntakePower) {
                 ROBOT.INTAKE.power = intakePower
-                ROBOT.LINTAKE.power = -intakePower
+                ROBOT.LINTAKE.power = intakePower
             }
             lastIntakePower = intakePower
 
@@ -165,15 +167,16 @@ class TeleOP: LinearOpMode() {
             ROBOT.PIVOT.power = pivotPower
             ROBOT.CPIVOT.power = pivotPower
 
-
+            telemetry.addLine("")
             telemetry.addData("PIVOT POWER", pivotPower)
             telemetry.addData("Pivot Position", pivotPOS)
-
+            telemetry.addLine("")
             telemetry.addData("Lift Position", ROBOT.LIFT.currentPosition)
-
             telemetry.addData("Max Extension", maxExtension)
-
+            telemetry.addLine("")
             telemetry.addData("Intake Power", intakePower)
+            telemetry.addLine("")
+            telemetry.addData("WRIST POS", ROBOT.WRIST.position)
 
             telemetry.update()
             /* END - ACTION LOOP */

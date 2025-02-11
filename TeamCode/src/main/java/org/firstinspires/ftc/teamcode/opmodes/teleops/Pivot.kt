@@ -17,6 +17,7 @@ class Pivot: LinearOpMode() {
         ROBOT.PIVOT.mode = DcMotor.RunMode.RUN_WITHOUT_ENCODER
         while (opModeIsActive()) {
             ROBOT.PIVOT.power = gamepad2.left_stick_y.toDouble()
+            ROBOT.CPIVOT.power = gamepad2.left_stick_y.toDouble()
 
             telemetry.addData("Position", ROBOT.PIVOT.currentPosition)
             telemetry.update()
