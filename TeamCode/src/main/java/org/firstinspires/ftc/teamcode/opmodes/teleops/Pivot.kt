@@ -20,6 +20,7 @@ class Pivot: LinearOpMode() {
             ROBOT.CPIVOT.power = gamepad2.left_stick_y.toDouble()
 
             telemetry.addData("Position", ROBOT.PIVOT.currentPosition)
+            telemetry.addData("WRIST POS", ROBOT.WRIST.position)
             telemetry.update()
         }
 
