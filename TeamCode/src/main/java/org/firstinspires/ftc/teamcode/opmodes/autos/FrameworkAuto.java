@@ -49,12 +49,17 @@ public class FrameworkAuto extends LinearOpMode {
                 int pivotError = targetPivot - robot.getPIVOT().getCurrentPosition();
                 int liftError = targetLift - robot.getLIFT().getCurrentPosition();
 
-                // Use similar power values to the working Auto.java
-                robot.getPIVOT().setPower(pivotError * 0.02);
-                robot.getLIFT().setPower(liftError * 0.02);
+                // Cap the power to valid range
+                double pivotPower = pivotError * 0.02;
+                pivotPower = Math.max(-1.0, Math.min(1.0, pivotPower));
+                robot.getPIVOT().setPower(pivotPower);
+                robot.getCPIVOT().setPower(pivotPower);
+
+                double liftPower = liftError * 0.02;
+                liftPower = Math.max(-1.0, Math.min(1.0, liftPower));
+                robot.getLIFT().setPower(liftPower);
 
                 robot.getWRIST().setPosition(targetWrist);
-
 
                 p.put("pivotPos", robot.getPIVOT().getCurrentPosition());
                 p.put("pivotPOWER", robot.getPIVOT().getPower());
@@ -66,7 +71,7 @@ public class FrameworkAuto extends LinearOpMode {
                 boolean pivotDone = Math.abs(pivotError) < 200;
                 boolean liftDone = Math.abs(liftError) < 200;
 
-                if (pivotDone) robot.getPIVOT().setPower(0);
+                if (pivotDone) robot.getPIVOT().setPower(0);robot.getCPIVOT().setPower(0);
                 if (liftDone) robot.getLIFT().setPower(0);
 
                 return !(pivotDone && liftDone);
@@ -102,21 +107,12 @@ public class FrameworkAuto extends LinearOpMode {
         robot.getLIFT().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Define trajectories (matching Auto.java)
+
+
         TrajectoryActionBuilder step1 = drive.actionBuilder(startPose)
                 .strafeTo(new Vector2d(4.04, -38.8));
 
 
-        TrajectoryActionBuilder step2 = step1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(-36.0, -24.0-2.25))
-                .turnTo(Math.toRadians(180.0));
-
-        TrajectoryActionBuilder step3 = step2.endTrajectory().fresh()
-                .strafeTo(new Vector2d(-48, -48))
-                .turnTo(Math.toRadians(-135.0));
-
-        Action step4 = drive.actionBuilder(new Pose2d(-48, -48, Math.toRadians(-135)))
-                .strafeTo(new Vector2d(-34, -12))
-                .build();
 
         // Reset pivot to starting position
         Actions.runBlocking(moveToPosition(robot, 0, 0, 0.0, 10.0));
@@ -127,7 +123,7 @@ public class FrameworkAuto extends LinearOpMode {
 
         // Run the autonomous sequence
         Actions.runBlocking(new SequentialAction(
-//                step1.build(),
+                step1.build(),
                 moveToPosition(robot, 2260, 1374, 0.69, 8.0)
 
         ));
