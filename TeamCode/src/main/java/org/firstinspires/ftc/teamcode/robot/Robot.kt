@@ -39,7 +39,7 @@ class Robot(hwMap: HardwareMap?) {
     var LINTAKE: CRServo
     var WRIST: Servo
 
-    var IMU: BNO055IMU
+//    var IMU: BNO055IMU
 
 
     val trackWidth = 12.0
@@ -109,11 +109,11 @@ class Robot(hwMap: HardwareMap?) {
 
         LIFT.mode = DcMotor.RunMode.RUN_USING_ENCODER
 
-        IMU = hardwareMap!!.get(BNO055IMU::class.java, "imu")
-        val parameters = BNO055IMU.Parameters()
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC
-        IMU.initialize(parameters)
+//        IMU = hardwareMap!!.get(BNO055IMU::class.java, "imu")
+//        val parameters = BNO055IMU.Parameters()
+//        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS
+//        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC
+//        IMU.initialize(parameters)
 
 
     }
@@ -295,9 +295,9 @@ class Robot(hwMap: HardwareMap?) {
         FR.power = v3
     }
 
-    fun getExternalHeadingVelocity(): Double {
-        return IMU.angularVelocity.zRotationRate.toDouble()
-    }
+//    fun getExternalHeadingVelocity(): Double {
+//        return IMU.angularVelocity.zRotationRate.toDouble()
+//    }
 
 
 
