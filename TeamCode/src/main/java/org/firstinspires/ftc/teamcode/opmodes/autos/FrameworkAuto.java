@@ -25,7 +25,7 @@ public class FrameworkAuto extends LinearOpMode {
     // Constants for arm positions in millimeters
     private static final double ARM_DOWN_POSITION = 72.0; // mm when arm is fully down
     private static final double RESET_PIVOT_DIST = ARM_DOWN_POSITION;
-    private static final double UP_PIVOT_DIST = (121 - 69) + ARM_DOWN_POSITION - 3; // Adjust based on actual measurement
+    private static final double UP_PIVOT_DIST = (121 - 69) + ARM_DOWN_POSITION - 5; // Adjust based on actual measurement
     private static final double DOWN_PIVOT_DIST = 90.0; // Slightly above fully down
 
     private static final int UP_LIFT_POS = 3000;

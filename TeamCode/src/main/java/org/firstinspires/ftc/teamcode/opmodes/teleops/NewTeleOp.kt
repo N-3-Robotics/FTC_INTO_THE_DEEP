@@ -25,34 +25,34 @@ private enum class ArmState {
 @TeleOp(name = "TeleOp")
 class NewTeleOP: LinearOpMode() {
     private companion object {
-        const val ARM_DOWN_POSITION = 69.0 // mm when arm is fully down
+        // Distance sensor constants (in mm)
+        const val MIN_PIVOT_DIST = 72.0  // Minimum safe distance
+        const val MAX_PIVOT_DIST = 150.0 // Maximum safe distance
 
-        // Convert previous encoder positions to distance sensor readings
-        const val INTAKE_PIVOT_DIST = 69.0  // mm (fully down)
-        const val OUTTAKE_PIVOT_DIST = 250.0 // mm (estimated - adjust based on actual readings)
-        const val RESET_PIVOT_DIST = 120.0  // mm (estimated - adjust based on actual readings)
+        // Preset positions using distance sensor values
+        const val INTAKE_PIVOT_DIST = 72.0  // Fully down for intake
+        const val OUTTAKE_PIVOT_DIST = 145.0 // Position for outtaking
+        const val RESET_PIVOT_DIST = 72.0  // Reset position
 
+        // Lift positions (using encoder values)
         const val INTAKE_LIFT_POS = 0
-        const val INTAKE_WRIST_POS = 0.8
-
-        const val OUTTAKE_LIFT_POS = 2000
-        const val OUTTAKE_WRIST_POS = 0.2
-
+        const val OUTTAKE_LIFT_POS = 2910
         const val RESET_LIFT_POS = 0
-        const val RESET_WRIST_POS = 0.58
+
+        // Wrist positions (servo values 0-1)
+        const val INTAKE_WRIST_POS = 0.38
+        const val OUTTAKE_WRIST_POS = 0.955
+        const val RESET_WRIST_POS = 0.0
 
         const val HANGING_THRESHOLD = 10
-
         const val ENABLE_CONSTRAINTS = true
     }
 
     private fun updateManualControl(robot: Robot, gamepad: Gamepad): Triple<Double, Double, Double> {
-        val PIVOT_MIN_DIST = ARM_DOWN_POSITION
-        val PIVOT_MAX_DIST = 250.0  // mm - adjust based on maximum safe height
-        val SLIDES_MAX = 1700.0
-        val SLIDES_HOLD_THRESHOLD = 800
+        // Get current pivot position from distance sensor
+        val currentPivotDist = robot.PIV_DIST.getDistance(DistanceUnit.MM)
 
-        var pivotPower = gamepad.left_stick_y.toDouble()
+        var pivotPower = gamepad.left_stick_y.toDouble() // Invert for intuitive control
         var liftPower = gamepad.right_trigger.toDouble() - gamepad.left_trigger.toDouble()
         var intakePower = when {
             gamepad.right_bumper -> 1.0
@@ -60,23 +60,24 @@ class NewTeleOP: LinearOpMode() {
             else -> 0.0
         }
 
-        var wristDelta = gamepad.right_stick_y * 0.05
-        robot.WRIST.position = (robot.WRIST.position - wristDelta).coerceIn(0.0, 1.0)
+        // Update wrist position
+        var wristDelta = -gamepad.right_stick_y * 0.05
+        robot.WRIST.position = (robot.WRIST.position + wristDelta).coerceIn(0.0, 1.0)
 
         if (ENABLE_CONSTRAINTS) {
-            val currentDist = robot.PIV_DIST.getDistance(DistanceUnit.MM)
-
-            if (currentDist >= PIVOT_MAX_DIST && pivotPower > 0) {
+            // Prevent pivot from going beyond safe limits
+            if (currentPivotDist >= MAX_PIVOT_DIST && pivotPower > 0) {
                 pivotPower = 0.0
-            } else if (currentDist <= PIVOT_MIN_DIST && pivotPower < 0) {
+            } else if (currentPivotDist <= MIN_PIVOT_DIST && pivotPower < 0) {
                 pivotPower = 0.0
             }
 
-            val distanceRatio = (currentDist - PIVOT_MIN_DIST) / (PIVOT_MAX_DIST - PIVOT_MIN_DIST)
-            val maxExtension = SLIDES_MAX + lerp(0.0, 3000.0-SLIDES_MAX, distanceRatio)
+            // Slide limits based on pivot position
+            val pivotRatio = (currentPivotDist - MIN_PIVOT_DIST) / (MAX_PIVOT_DIST - MIN_PIVOT_DIST)
+            val maxSlideExtension = lerp(1700.0, 3300.0, pivotRatio)
 
-            if (robot.LIFT.currentPosition > maxExtension && (liftPower > 0.0 || pivotPower < 0.0)) {
-                liftPower = -0.1
+            if (robot.LIFT.currentPosition > maxSlideExtension && liftPower > 0) {
+                liftPower = 0.0
             } else if (robot.LIFT.currentPosition < 0 && liftPower < 0) {
                 liftPower = 0.0
             }
@@ -89,39 +90,40 @@ class NewTeleOP: LinearOpMode() {
         val currentDist = robot.PIV_DIST.getDistance(DistanceUnit.MM)
         val distError = targetDist - currentDist
         val liftError = targetLift - robot.LIFT.currentPosition
-        val wristError = abs(targetWrist - robot.WRIST.position)
 
-        // Adjust power based on distance error
+        // Calculate pivot power without holding component
         val pivotPower = (distError * 0.02).coerceIn(-0.5, 0.5)
+
         robot.PIVOT.power = pivotPower
         robot.CPIVOT.power = pivotPower
 
-        robot.LIFT.power = (liftError * 0.05).coerceIn(-0.8, 0.8)
+        // Calculate lift power
+        val liftPower = (liftError * 0.002).coerceIn(-0.8, 0.8)
+        robot.LIFT.power = liftPower
+
+        // Update wrist position
         robot.WRIST.position = targetWrist
 
-        return abs(distError) < 5 && abs(liftError) < 20 && wristError < 0.02
+        // Return true when position is reached
+        return abs(distError) < 2.0 && abs(liftError) < 30
     }
 
     override fun runOpMode() {
         val timer = ElapsedTime()
         telemetry = MultipleTelemetry(telemetry, FtcDashboard.getInstance().telemetry)
         val ROBOT = Robot(hardwareMap)
-        val startPose =
-            Pose2d(-24 - (16.75 / 2), -(60 + ((24 - 17).toDouble() / 2)), Math.toRadians(90.0))
-
+        val startPose = Pose2d(-24 - (16.75 / 2), -(60 + ((24 - 17).toDouble() / 2)), Math.toRadians(90.0))
         val LOCALIZER = MecanumDrive(hardwareMap, startPose)
 
-        var m = 0.5
-
-        ROBOT.PIVOT.power = 0.0
-        ROBOT.CPIVOT.power = 0.0
-        ROBOT.WRIST.position = 0.0
-
+        var driveSpeed = 0.5
         var currentState = ArmState.MANUAL
         var lastIntakePower = 0.0
 
+        ROBOT.PIVOT.power = 0.0
+        ROBOT.CPIVOT.power = 0.0
+        ROBOT.WRIST.position = RESET_WRIST_POS
+
         telemetry.addData("Status", "Initialized")
-        telemetry.addData("Constraints", if (ENABLE_CONSTRAINTS) "Enabled" else "Disabled")
         telemetry.update()
 
         waitForStart()
@@ -130,6 +132,7 @@ class NewTeleOP: LinearOpMode() {
             telemetry.addData("Loop Time", timer.milliseconds())
             timer.reset()
 
+            // State transitions
             when {
                 gamepad2.dpad_up -> currentState = ArmState.MANUAL
                 gamepad2.dpad_left -> currentState = ArmState.RESETTING
@@ -137,6 +140,7 @@ class NewTeleOP: LinearOpMode() {
                 gamepad2.dpad_down -> currentState = ArmState.HANGING
             }
 
+            // State machine
             when (currentState) {
                 ArmState.MANUAL -> {
                     val (pivotPower, liftPower, intakePower) = updateManualControl(ROBOT, gamepad2)
@@ -180,31 +184,34 @@ class NewTeleOP: LinearOpMode() {
                 }
             }
 
+            // Drive speed control
             when {
-                gamepad1.cross -> m = 0.25
-                gamepad1.circle -> m = 0.5
-                gamepad1.square -> m = 0.75
-                gamepad1.triangle -> m = 1.0
+                gamepad1.cross -> driveSpeed = 0.25
+                gamepad1.circle -> driveSpeed = 0.5
+                gamepad1.square -> driveSpeed = 0.75
+                gamepad1.triangle -> driveSpeed = 1.0
             }
-            ROBOT.gamepadDrive(gamepad1, m)
+
+            ROBOT.gamepadDrive(gamepad1, driveSpeed)
             LOCALIZER.updatePoseEstimate()
 
-            val POSE = LOCALIZER.localizer.pose
-
+            // Telemetry
+            val pose = LOCALIZER.localizer.pose
             telemetry.addData("Current State", currentState)
-            telemetry.addData("Constraints", if (ENABLE_CONSTRAINTS) "Enabled" else "Disabled")
-            telemetry.addData("Pivot Distance", ROBOT.PIV_DIST.getDistance(DistanceUnit.MM))
+            telemetry.addData("Pivot Distance (mm)", ROBOT.PIV_DIST.getDistance(DistanceUnit.MM))
             telemetry.addData("Lift Position", ROBOT.LIFT.currentPosition)
             telemetry.addData("Wrist Position", ROBOT.WRIST.position)
-            telemetry.addLine("")
-            telemetry.addData("X: ", POSE.position.x)
-            telemetry.addData("Y: ", POSE.position.y)
-            telemetry.addData("HEADING: ", Math.toDegrees(POSE.heading.toDouble()))
+            telemetry.addData("Drive Speed", driveSpeed)
+            telemetry.addLine()
+            telemetry.addData("X", pose.position.x)
+            telemetry.addData("Y", pose.position.y)
+            telemetry.addData("Heading", Math.toDegrees(pose.heading.toDouble()))
             telemetry.update()
 
+            // Dashboard visualization
             val packet = TelemetryPacket()
             packet.fieldOverlay().setStroke("#3F51B5")
-            Drawing.drawRobot(packet.fieldOverlay(), POSE)
+            Drawing.drawRobot(packet.fieldOverlay(), pose)
             FtcDashboard.getInstance().sendTelemetryPacket(packet)
         }
     }
