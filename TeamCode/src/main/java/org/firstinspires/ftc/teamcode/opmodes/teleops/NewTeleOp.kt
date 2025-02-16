@@ -18,6 +18,7 @@ private enum class ArmState {
     MANUAL,
     INTAKING,
     OUTTAKING,
+    SAMPLE,
     RESETTING,
     HANGING
 }
@@ -92,13 +93,13 @@ class NewTeleOP: LinearOpMode() {
         val liftError = targetLift - robot.LIFT.currentPosition
 
         // Calculate pivot power without holding component
-        val pivotPower = (distError * 0.02).coerceIn(-0.5, 0.5)
+        val pivotPower = (distError * 0.1).coerceIn(-0.5, 0.5)
 
         robot.PIVOT.power = pivotPower
         robot.CPIVOT.power = pivotPower
 
         // Calculate lift power
-        val liftPower = (liftError * 0.002).coerceIn(-0.8, 0.8)
+        val liftPower = (liftError * 0.02).coerceIn(-0.8, 0.8)
         robot.LIFT.power = liftPower
 
         // Update wrist position
@@ -138,6 +139,7 @@ class NewTeleOP: LinearOpMode() {
                 gamepad2.dpad_left -> currentState = ArmState.RESETTING
                 gamepad2.dpad_right -> currentState = ArmState.OUTTAKING
                 gamepad2.dpad_down -> currentState = ArmState.HANGING
+                gamepad2.triangle -> currentState = ArmState.SAMPLE
             }
 
             // State machine
@@ -165,6 +167,12 @@ class NewTeleOP: LinearOpMode() {
                     moveToPosition(ROBOT, INTAKE_PIVOT_DIST, INTAKE_LIFT_POS, INTAKE_WRIST_POS)
                     ROBOT.INTAKE.power = 1.0
                     ROBOT.LINTAKE.power = 1.0
+                }
+
+                ArmState.SAMPLE -> {
+                    if (moveToPosition(ROBOT, 70.0, 0, 0.395)) {
+                        currentState = ArmState.MANUAL
+                    }
                 }
 
                 ArmState.OUTTAKING -> {
