@@ -43,7 +43,7 @@ class NewTeleOP: LinearOpMode() {
 
         const val HANGING_THRESHOLD = 10
 
-        const val ENABLE_CONSTRAINTS = false
+        const val ENABLE_CONSTRAINTS = true
     }
 
     private fun updateManualControl(robot: Robot, gamepad: Gamepad): Triple<Double, Double, Double> {

@@ -171,6 +171,18 @@ public class SampleAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-56, -54), Math.toRadians(-135));
 
 
+        TrajectoryActionBuilder pickUpSecondBlock1 = depositFirstBlock.endTrajectory().fresh()
+                .strafeTo(new Vector2d(-48, -50))
+                .strafeToLinearHeading(new Vector2d(-56, -43.5), Math.toRadians(90));
+
+        TrajectoryActionBuilder pickUpSecondBlock2 = pickUpSecondBlock1.endTrajectory().fresh()
+                .strafeTo(new Vector2d(-56, -35));
+
+        TrajectoryActionBuilder depositSecondBlock = pickUpSecondBlock2.endTrajectory().fresh()
+                .strafeTo(new Vector2d(-56, -45))
+                .strafeToLinearHeading(new Vector2d(-56, -54), Math.toRadians(-135));
+
+
 
         // Reset to starting position
         Actions.runBlocking(new SequentialAction(
@@ -201,13 +213,32 @@ public class SampleAuto extends LinearOpMode {
                 moveLift(robot, 0, 5.0),
 
                 movePivot(robot, 72, 2.0),
-                setWrist(robot, 0.38),
+                setWrist(robot, 0.39),
                 pickUpFirstBlock1.build(),
                 setIntakePower(robot, 1),
                 pickUpFirstBlock2.build(),
                 new SleepAction(0.5),
                 setIntakePower(robot, 0),
                 depositFirstBlock.build(),
+                movePivot(robot, 145, 4.0),
+                moveLift(robot, 2910, 4.0),
+                setWrist(robot, 0.955),
+                new SleepAction(0.5),
+                setIntakePower(robot, -1),
+                new SleepAction(0.5),
+                setIntakePower(robot, 0),
+
+                setWrist(robot, 0.0),
+                moveLift(robot, 0, 5.0),
+
+                movePivot(robot, 72, 2.0),
+                setWrist(robot, 0.39),
+                pickUpSecondBlock1.build(),
+                setIntakePower(robot, 1),
+                pickUpSecondBlock2.build(),
+                new SleepAction(0.5),
+                setIntakePower(robot, 0),
+                depositSecondBlock.build(),
                 movePivot(robot, 145, 4.0),
                 moveLift(robot, 2910, 4.0),
                 setWrist(robot, 0.955),

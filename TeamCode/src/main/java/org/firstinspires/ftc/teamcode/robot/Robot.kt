@@ -80,6 +80,7 @@ class Robot(hwMap: HardwareMap?) {
 
         LIFT = hardwareMap!!.get(DcMotorEx::class.java, "LIFT")
         LIFT.direction = DcMotorSimple.Direction.REVERSE
+        LIFT.zeroPowerBehavior = DcMotor.ZeroPowerBehavior.BRAKE
 
         PIVOT = hardwareMap!!.get(DcMotorEx::class.java, "PIVOT")
         CPIVOT = hardwareMap!!.get(DcMotorEx::class.java, "CPIVOT")
