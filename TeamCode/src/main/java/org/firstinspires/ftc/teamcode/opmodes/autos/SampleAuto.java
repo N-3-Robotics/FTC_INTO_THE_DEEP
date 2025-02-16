@@ -1,27 +1,23 @@
 package org.firstinspires.ftc.teamcode.opmodes.autos;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.Robot;
 
-@Autonomous(name = "Specimen")
-public class FrameworkAuto extends LinearOpMode {
+@Autonomous(name = "Sample")
+public class SampleAuto extends LinearOpMode {
     // Constants for arm positions in millimeters
     private static final double ARM_DOWN_POSITION = 72.0; // mm when arm is fully down
     private static final double RESET_PIVOT_DIST = ARM_DOWN_POSITION;
@@ -113,7 +109,7 @@ public class FrameworkAuto extends LinearOpMode {
                 p.put("liftPower", liftPower);
                 p.put("ELAPSED TIME", elapsed);
 
-                boolean liftDone = Math.abs(liftError) < 10;
+                boolean liftDone = Math.abs(liftError) < 30;
 
                 if (liftDone) robot.getLIFT().setPower(0);
 
@@ -145,7 +141,7 @@ public class FrameworkAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d startPose = new Pose2d(16.75/2, -(60+((double) (24-17)/2)), Math.toRadians(90.0));
+        Pose2d startPose = new Pose2d(-24-(16.75/2), -(60+((double) (24-17)/2)), Math.toRadians(90.0));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
         Robot robot = new Robot(hardwareMap);
 
@@ -158,24 +154,23 @@ public class FrameworkAuto extends LinearOpMode {
         robot.getCPIVOT().setPower(0);
 
         TrajectoryActionBuilder step1 = drive.actionBuilder(startPose)
-                .strafeTo(new Vector2d(4.04, -38.8));
+                .strafeTo(new Vector2d(-24-(16.75/2), -60))
+                .strafeToLinearHeading(new Vector2d(-56, -54), Math.toRadians(-135));
 
 
-        TrajectoryActionBuilder step2 = step1.endTrajectory().fresh()
-                .strafeTo(new Vector2d(37.5, -38))
-                .strafeTo(new Vector2d(37.5, -14.6))
-                .strafeToLinearHeading(new Vector2d(47.6, -14.6), 0)
-                .strafeTo(new Vector2d(45.5, -57.6))
 
-                .strafeTo(new Vector2d(45.5, -47))
 
-                .strafeToLinearHeading(new Vector2d( 48, -45), Math.toRadians(-90));
+        TrajectoryActionBuilder pickUpFirstBlock1 = step1.endTrajectory().fresh()
+                .strafeToLinearHeading(new Vector2d(-48, -43.5), Math.toRadians(90));
 
-        TrajectoryActionBuilder step3 = step2.endTrajectory().fresh()
-                .strafeTo(new Vector2d(48, -52.4));
+        TrajectoryActionBuilder pickUpFirstBlock2 = pickUpFirstBlock1.endTrajectory().fresh()
+                .strafeTo(new Vector2d(-48, -35));
 
-        TrajectoryActionBuilder step4 = step3.endTrajectory().fresh()
-                .strafeToLinearHeading(new Vector2d(6.04, -38.8), Math.toRadians(90));
+        TrajectoryActionBuilder depositFirstBlock = pickUpFirstBlock2.endTrajectory().fresh()
+                .strafeTo(new Vector2d(-48, -45))
+                .strafeToLinearHeading(new Vector2d(-56, -54), Math.toRadians(-135));
+
+
 
         // Reset to starting position
         Actions.runBlocking(new SequentialAction(
@@ -184,54 +179,45 @@ public class FrameworkAuto extends LinearOpMode {
                 setWrist(robot, 0.0)
         ));
 
+        robot.getLIFT().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.getLIFT().setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         waitForStart();
 
         if (isStopRequested()) return;
 
         // Run the autonomous sequence
         Actions.runBlocking(new SequentialAction(
-                movePivot(robot, DOWN_PIVOT_DIST, 4.0), // Adjusted from 600 encoder ticks to estimated distance
                 step1.build(),
-                movePivot(robot, UP_PIVOT_DIST, 4.0),
-                setWrist(robot, 0.46),
-                new SleepAction(1.0),
-                moveLift(robot, 1380, 4.0),
-
-                moveLift(robot, 0, 4.0),
-                setWrist(robot, 0),
-                movePivot(robot, RESET_PIVOT_DIST, 4.0),
+                movePivot(robot, 145, 4.0),
+                moveLift(robot, 2910, 4.0),
+                setWrist(robot, 0.955),
+                new SleepAction(0.5),
                 setIntakePower(robot, -1),
                 new SleepAction(0.5),
                 setIntakePower(robot, 0),
 
-                step2.build(),
-                new SleepAction(3),
+                setWrist(robot, 0.0),
+                moveLift(robot, 0, 5.0),
 
-                movePivot(robot, 70, 4.0),
-                setWrist(robot, 0.395),
-                step3.build(),
-                new SleepAction(0.5),
+                movePivot(robot, 72, 2.0),
+                setWrist(robot, 0.38),
+                pickUpFirstBlock1.build(),
                 setIntakePower(robot, 1),
-                moveLift(robot, 800, 4.0),
+                pickUpFirstBlock2.build(),
                 new SleepAction(0.5),
-
                 setIntakePower(robot, 0),
-                moveLift(robot, 0, 4.0),
-                setWrist(robot, 0),
-                movePivot(robot, RESET_PIVOT_DIST, 4.0),
+                depositFirstBlock.build(),
+                movePivot(robot, 145, 4.0),
+                moveLift(robot, 2910, 4.0),
+                setWrist(robot, 0.955),
+                new SleepAction(0.5),
+                setIntakePower(robot, -1),
+                new SleepAction(0.5),
+                setIntakePower(robot, 0)
 
 
 
-                movePivot(robot, DOWN_PIVOT_DIST, 4.0), // Adjusted from 600 encoder ticks to estimated distance
-                step4.build(),
-                movePivot(robot, UP_PIVOT_DIST, 4.0),
-                setWrist(robot, 0.46),
-                new SleepAction(1.0),
-                moveLift(robot, 1380, 4.0),
-
-                moveLift(robot, 0, 4.0),
-                setWrist(robot, 0),
-                movePivot(robot, RESET_PIVOT_DIST, 4.0)
 
         ));
 

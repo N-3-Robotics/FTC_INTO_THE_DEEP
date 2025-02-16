@@ -26,7 +26,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 
-
+@Disabled
 @Autonomous(name="Auto", group="Autos")
 public class Auto extends LinearOpMode {
 

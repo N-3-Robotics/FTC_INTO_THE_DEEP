@@ -32,7 +32,7 @@ class Robot(hwMap: HardwareMap?) {
     var PIVOT: DcMotorEx
     var CPIVOT: DcMotorEx
 
-
+    var PIV_DIST: Rev2mDistanceSensor
 
 
     var INTAKE: CRServo
@@ -84,6 +84,9 @@ class Robot(hwMap: HardwareMap?) {
         PIVOT = hardwareMap!!.get(DcMotorEx::class.java, "PIVOT")
         CPIVOT = hardwareMap!!.get(DcMotorEx::class.java, "CPIVOT")
         CPIVOT.direction = DcMotorSimple.Direction.REVERSE
+
+        PIV_DIST = hardwareMap!!.get(Rev2mDistanceSensor::class.java, "PIVDIST")
+        // configure PIV_DIST to use inches as distance unit
 
         
         INTAKE = hardwareMap!!.get(CRServo::class.java, "INTAKE")
