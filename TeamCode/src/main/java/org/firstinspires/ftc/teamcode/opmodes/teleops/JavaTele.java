@@ -75,7 +75,19 @@ public class JavaTele extends LinearOpMode{
         return new Triple(pivotPower, liftPower, intakePower);
     }
 
-    @Override
+    private final boolean moveToPosition(Robot robot, double targetDist, int targetLift, double targetWrist){
+        double curentDist = robot.getPIV_DIST().getDistance(DistanceUnit.MM);
+        double distError = targetDist - curentDist;
+        int liftError = targetLift - robot.getLIFT().getCurrentPosition();
+        double pivotPower = RangesKt.coerceIn(distError * 0.1, -0.5, 0.5);
+        robot.getPIVOT().setPower(pivotPower);
+        robot.getCPIVOT().setPower(pivotPower);
+        double liftPower = RangesKt.coerceIn((double)liftError * 0.02, -0.8, 0.8);
+        robot.getLIFT().setPower(liftPower);
+        robot.getWRIST().setPosition(targetWrist);
+        return Math.abs(distError) < 5.0 && Math.abs(liftError) < 5;
+    }
+
     public void runOpMode(){
         ElapsedTime timer = new ElapsedTime();
         Telemetry[] var2 = new Telemetry[]{this.telemetry, FtcDashboard.getInstance().getTelemetry()};
