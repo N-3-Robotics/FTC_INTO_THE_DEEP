@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.robot.Robot;
+import org.firstinspires.ftc.teamcode.robot.Robot;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Drawing;
@@ -42,12 +42,9 @@ public class JavaTele extends LinearOpMode{
     public void runOpMode(){
         ElapsedTime timer = new ElapsedTime();
         Robot robot = new Robot(hardwareMap);
-        double startPose = Pose2d(-24 - (16.75 / 2), -(60 + ((24-17))) )
-
-
-
-
-
+        Pose2d startPose = new Pose2d(-32.375, -63.5, Math.toRadians(90.0));
+        MecanumDrive LOCALIZER = new MecanumDrive(hardwareMap, startPose);
+        double driveSpeed = 0.5;
     }
 
 }
