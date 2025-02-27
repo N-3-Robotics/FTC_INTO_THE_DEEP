@@ -76,16 +76,23 @@ public class JavaTele extends LinearOpMode{
     }
 
     private final boolean moveToPosition(Robot robot, double targetDist, int targetLift, double targetWrist){
+        //find distance error and lift error
         double curentDist = robot.getPIV_DIST().getDistance(DistanceUnit.MM);
         double distError = targetDist - curentDist;
         int liftError = targetLift - robot.getLIFT().getCurrentPosition();
+
+        //rectify pivot error
         double pivotPower = RangesKt.coerceIn(distError * 0.1, -0.5, 0.5);
         robot.getPIVOT().setPower(pivotPower);
         robot.getCPIVOT().setPower(pivotPower);
+
+        //rectify lift error
         double liftPower = RangesKt.coerceIn((double)liftError * 0.02, -0.8, 0.8);
         robot.getLIFT().setPower(liftPower);
         robot.getWRIST().setPosition(targetWrist);
-        return Math.abs(distError) < 5.0 && Math.abs(liftError) < 5;
+
+        //return whether or not the robot is within the threshold
+        return Math.abs(distError) < 2.0 && Math.abs(liftError) < 30;
     }
 
     public void runOpMode(){
@@ -125,7 +132,16 @@ public class JavaTele extends LinearOpMode{
                 case 1:
                     Gamepad GP2 = this.gamepad2;
                     Intrinsics.checkNotNullExpressionValue(GP2, "gamepad2");
-                    Triple robot =
+
+                    //grab the pivot power, lift power, and intake power from the manual control method
+                    Triple var12 = this.updateManualControl(robot, GP2);
+                    double pivotPower = (Double)var12.component1();
+                    double liftPower = (Double)var12.component2();
+                    double intakePower = (Double)var12.component3();
+
+                    //set the pivot, lift, and intake power
+                    robot.getPIVOT().setPower(pivotPower);
+                    robot.getCPIVOT().setPower(pivotPower);
             }
         }
     }
