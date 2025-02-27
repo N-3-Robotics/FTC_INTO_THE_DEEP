@@ -14,6 +14,9 @@ import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
+import kotlin.Triple;
+import kotlin.jvm.internal.Intrinsics;
+
 enum ArmState{
     MANUAL,
     INTAKING,
@@ -75,8 +78,26 @@ public class JavaTele extends LinearOpMode{
                 currentState = ArmState.RESETTING;
             }else if(this.gamepad2.dpad_right){
                 currentState = ArmState.OUTTAKING;
+            }else if(this.gamepad2.dpad_down){
+                currentState = ArmState.HANGING;
+            }else if(this.gamepad2.triangle){
+                currentState = ArmState.SAMPLE;
+            }
+
+            int stateSelector = JavaTele.WhenMappings.$EnumSwitchMapping$0[currentState.ordinal()];
+            switch(stateSelector){
+                case 1:
+                    Gamepad GP2 = this.gamepad2;
+                    Intrinsics.checkNotNullExpressionValue(GP2, "gamepad2");
+                    Triple
             }
         }
     }
+    public class WhenMappings{
+        public static final int[] $EnumSwitchMapping$0;
 
+        static{
+            int[] 
+        }
+    }
 }
