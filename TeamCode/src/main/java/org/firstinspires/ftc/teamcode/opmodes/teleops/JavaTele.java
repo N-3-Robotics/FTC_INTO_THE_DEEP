@@ -51,6 +51,13 @@ public class JavaTele extends LinearOpMode{
     int HANGING_THRESHOLD = 10;
     boolean ENABLE_CONSTRAINTS = true;
 
+    private final Triple updateManualControl(Robot robot, Gamepad gamepad){
+        double currentPivoDist = robot.getPIV_DIST().getDistance(DistanceUnit.MM);
+        double pivotPower = (double)gamepad.left_stick_y;
+        double liftPower = (double)gamepad.right_trigger - (double)gamepad.left_trigger;
+        
+    }
+
     @Override
     public void runOpMode(){
         ElapsedTime timer = new ElapsedTime();
@@ -89,15 +96,52 @@ public class JavaTele extends LinearOpMode{
                 case 1:
                     Gamepad GP2 = this.gamepad2;
                     Intrinsics.checkNotNullExpressionValue(GP2, "gamepad2");
-                    Triple
+                    Triple robot =
             }
         }
     }
+
+    private final double lerp(double a, double b, double t){
+        return a + (b - a) * t;
+    }
+
     public class WhenMappings{
         public static final int[] $EnumSwitchMapping$0;
 
         static{
-            int[] 
+            int[] stateCode = new int[ArmState.values().length];
+
+            try{
+                stateCode[ArmState.MANUAL.ordinal()] = 1;   //see if code matches with an enum value
+            }catch (NoSuchFieldError ignored){  //if code doesn't match with an enum value, ignore
+            }
+
+            try{
+                stateCode[ArmState.RESETTING.ordinal()] = 2;
+            }catch(NoSuchFieldError ignored){
+            }
+
+            try{
+                stateCode[ArmState.INTAKING.ordinal()] = 3;
+            }catch(NoSuchFieldError ignored){
+            }
+
+            try{
+                stateCode[ArmState.SAMPLE.ordinal()] = 4;
+            }catch(NoSuchFieldError ignored){
+            }
+
+            try{
+                stateCode[ArmState.OUTTAKING.ordinal()] = 5;
+            }catch (NoSuchFieldError ignored){
+            }
+
+            try{
+                stateCode[ArmState.HANGING.ordinal()] = 6;
+            }catch(NoSuchFieldError ignored){
+            }
+
+            $EnumSwitchMapping$0 = stateCode;   //set states array value to corresponding code
         }
     }
 }
