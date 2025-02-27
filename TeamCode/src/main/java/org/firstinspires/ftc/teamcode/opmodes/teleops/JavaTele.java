@@ -12,6 +12,16 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
+enum ArmState{
+    MANUAL,
+    INTAKING,
+    OUTTAKING,
+    SAMPLE,
+    RESETTING,
+    HANGING;
+}
 
 @TeleOp
 
@@ -41,10 +51,32 @@ public class JavaTele extends LinearOpMode{
     @Override
     public void runOpMode(){
         ElapsedTime timer = new ElapsedTime();
+        Telemetry[] var2 = new Telemetry[]{this.telemetry, FtcDashboard.getInstance().getTelemetry()};
+        this.telemetry = (Telemetry)(new MultipleTelemetry(var2));
         Robot robot = new Robot(hardwareMap);
         Pose2d startPose = new Pose2d(-32.375, -63.5, Math.toRadians(90.0));
         MecanumDrive LOCALIZER = new MecanumDrive(hardwareMap, startPose);
         double driveSpeed = 0.5;
+        ArmState currentState = ArmState.MANUAL;
+        double lastIntakePower = 0.0;
+        robot.getPIVOT().setPower(0.0);
+        robot.getCPIVOT().setPower(0.0);
+        robot.getWRIST().setPosition(0.0);
+        this.telemetry.addData("Status", "Initialized", new Object[0]);
+        this.telemetry.update();
+        this.waitForStart();
+
+        while(this.opModeIsActive()){
+            this.telemetry.addData("Loop Time", timer.milliseconds());
+            timer.reset();
+            if(this.gamepad2.dpad_up){
+                currentState = ArmState.MANUAL;
+            } else if (this.gamepad2.dpad_left) {
+                currentState = ArmState.RESETTING;
+            }else if(this.gamepad2.dpad_right){
+                currentState = ArmState.OUTTAKING;
+            }
+        }
     }
 
 }
