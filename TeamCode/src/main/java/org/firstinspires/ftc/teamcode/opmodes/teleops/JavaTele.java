@@ -52,20 +52,30 @@ public class JavaTele extends LinearOpMode{
     boolean ENABLE_CONSTRAINTS = true;
 
     private final Triple updateManualControl(Robot robot, Gamepad gamepad){
+        //get current pivot distance and power values
         double currentPivotDist = robot.getPIV_DIST().getDistance(DistanceUnit.MM);
         double pivotPower = (double)gamepad.left_stick_y;
+
+        //get lift power and intake power values
         double liftPower = (double)gamepad.right_trigger - (double)gamepad.left_trigger;
         double intakePower = gamepad.right_bumper ? 1.0 : (gamepad.left_bumper ? -1.0 : 0.0);
+
+        //set wrist position based on right stick y value
         double wristDelta = (double)(-gamepad.right_stick_y) * 0.05;
         robot.getWRIST().setPosition(RangesKt.coerceIn(robot.getWRIST().getPosition() + wristDelta, 0.0, 1.0));
+
+        //update pivot power based on constraints
         if(currentPivotDist >= 150.0 && pivotPower > 0.0){
             pivotPower = 0.0;
         }else if(currentPivotDist <= 72.0 && pivotPower < 0.0){
             pivotPower = 0.0;
         }
 
+        //slide extension constraints
         double pivotRatio = (currentPivotDist - 72.0) / 78.0;
         double maxSlideExtension = this.lerp(1700.0,3300.0,pivotRatio);
+
+        //enforce slide constraints
         if((double)robot.getLIFT().getCurrentPosition() > maxSlideExtension && liftPower > 0.0) {
             liftPower = 0.0;
         }else if(robot.getLIFT().getCurrentPosition() < 0 && liftPower < 0.0){
@@ -115,6 +125,8 @@ public class JavaTele extends LinearOpMode{
         while(this.opModeIsActive()){
             this.telemetry.addData("Loop Time", timer.milliseconds());
             timer.reset();
+
+            //set the current state based on the dpad values
             if(this.gamepad2.dpad_up){
                 currentState = ArmState.MANUAL;
             } else if (this.gamepad2.dpad_left) {
@@ -127,14 +139,14 @@ public class JavaTele extends LinearOpMode{
                 currentState = ArmState.SAMPLE;
             }
 
+
             int stateSelector = JavaTele.WhenMappings.$EnumSwitchMapping$0[currentState.ordinal()];
             switch(stateSelector){
                 case 1:
-                    Gamepad GP2 = this.gamepad2;
-                    Intrinsics.checkNotNullExpressionValue(GP2, "gamepad2");
+                    //manual mode
 
                     //grab the pivot power, lift power, and intake power from the manual control method
-                    Triple var12 = this.updateManualControl(robot, GP2);
+                    Triple var12 = this.updateManualControl(robot, gamepad2);
                     double pivotPower = (Double)var12.component1();
                     double liftPower = (Double)var12.component2();
                     double intakePower = (Double)var12.component3();
@@ -142,7 +154,77 @@ public class JavaTele extends LinearOpMode{
                     //set the pivot, lift, and intake power
                     robot.getPIVOT().setPower(pivotPower);
                     robot.getCPIVOT().setPower(pivotPower);
+                    robot.getLIFT().setPower(liftPower);
+
+                    //if the intake power is not the previous power, set the intake power to controller value
+                    if(intakePower != lastIntakePower){
+                        robot.getINTAKE().setPower(intakePower);
+                        robot.getLINTAKE().setPower(intakePower);
+                        lastIntakePower = intakePower;
+                    }
+                    break;
+                case 2:
+                    //reset
+                    if(this.moveToPosition(robot, RESET_PIVOT_DIST, RESET_LIFT_POS, RESET_WRIST_POS)){
+                        currentState = ArmState.MANUAL;
+                    }
+                    break;
+                case 3:
+                    //intake
+                    moveToPosition(robot, INTAKE_PIVOT_DIST, INTAKE_LIFT_POS, INTAKE_WRIST_POS);
+                    robot.getINTAKE().setPower(1.0);
+                    robot.getLINTAKE().setPower(1.0);
+                    break;
+                case 4:
+                    //sample
+                    if(moveToPosition(robot, 70.0, 0, 0.395)){
+                        currentState = ArmState.MANUAL;
+                    }
+                    break;
+                case 5:
+                    //outtake
+                    moveToPosition(robot, OUTTAKE_PIVOT_DIST, OUTTAKE_LIFT_POS, OUTTAKE_WRIST_POS);
+                    robot.getINTAKE().setPower(-1.0);
+                    robot.getLINTAKE().setPower(-1.0);
+                    break;
+                case 6:
+                    //hang
+                    if(Math.abs(robot.getLIFT().getCurrentPosition()) > HANGING_THRESHOLD) {
+                        robot.getLIFT().setPower(-0.5);
+                        robot.getPIVOT().setPower(0.0);
+                        robot.getCPIVOT().setPower(0.0);
+                    }else{
+                        robot.getLIFT().setPower(0.0);
+                    }
+                    break;
             }
+        //drive speed control
+
+        if(gamepad1.cross){
+            driveSpeed = 0.25;
+        }else if(gamepad1.circle){
+            driveSpeed = 0.5;
+        }else if(gamepad1.square){
+            driveSpeed = 0.75;
+        }else if(gamepad1.triangle){
+            driveSpeed = 1.0;
+        }
+
+        robot.gamepadDrive(gamepad1, driveSpeed);
+        LOCALIZER.updatePoseEstimate();
+
+        //telemetry
+        Pose2d pose = LOCALIZER.localizer.getPose();
+            telemetry.addData("Current State", currentState);
+            telemetry.addData("Pivot Distance (mm)", robot.getPIV_DIST().getDistance(DistanceUnit.MM));
+            telemetry.addData("Lift Position", robot.getLIFT().getCurrentPosition());
+            telemetry.addData("Wrist Position", robot.getWRIST().getPosition());
+            telemetry.addData("Drive Speed", driveSpeed);
+            telemetry.addLine();
+            telemetry.addData("X", pose.position.x);
+            telemetry.addData("Y", pose.position.y);
+            telemetry.addData("Heading", Math.toDegrees(pose.heading.toDouble()));
+            telemetry.update();
         }
     }
 
