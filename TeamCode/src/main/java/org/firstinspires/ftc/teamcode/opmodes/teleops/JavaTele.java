@@ -13,7 +13,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Drawing;
 import org.firstinspires.ftc.teamcode.MecanumDrive;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+import kotlin.ranges.RangesKt;
 import kotlin.Triple;
 import kotlin.jvm.internal.Intrinsics;
 
@@ -52,10 +52,27 @@ public class JavaTele extends LinearOpMode{
     boolean ENABLE_CONSTRAINTS = true;
 
     private final Triple updateManualControl(Robot robot, Gamepad gamepad){
-        double currentPivoDist = robot.getPIV_DIST().getDistance(DistanceUnit.MM);
+        double currentPivotDist = robot.getPIV_DIST().getDistance(DistanceUnit.MM);
         double pivotPower = (double)gamepad.left_stick_y;
         double liftPower = (double)gamepad.right_trigger - (double)gamepad.left_trigger;
-        
+        double intakePower = gamepad.right_bumper ? 1.0 : (gamepad.left_bumper ? -1.0 : 0.0);
+        double wristDelta = (double)(-gamepad.right_stick_y) * 0.05;
+        robot.getWRIST().setPosition(RangesKt.coerceIn(robot.getWRIST().getPosition() + wristDelta, 0.0, 1.0));
+        if(currentPivotDist >= 150.0 && pivotPower > 0.0){
+            pivotPower = 0.0;
+        }else if(currentPivotDist <= 72.0 && pivotPower < 0.0){
+            pivotPower = 0.0;
+        }
+
+        double pivotRatio = (currentPivotDist - 72.0) / 78.0;
+        double maxSlideExtension = this.lerp(1700.0,3300.0,pivotRatio);
+        if((double)robot.getLIFT().getCurrentPosition() > maxSlideExtension && liftPower > 0.0) {
+            liftPower = 0.0;
+        }else if(robot.getLIFT().getCurrentPosition() < 0 && liftPower < 0.0){
+            liftPower = 0.0;
+        }
+
+        return new Triple(pivotPower, liftPower, intakePower);
     }
 
     @Override
